@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject IConfiguration Configuration
+@inject IJSRuntime JS
 
 <div class="page">
     <div class="sidebar @(isMenuVisible ? "show" : "")">
@@ -11,8 +12,8 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <div class="d-flex align-items-center">
+        <div class="top-row px-3 px-md-4">
+            <div class="d-flex align-items-center brand-wrap">
                 @if (!isMenuVisible)
                 {
                     <button class="btn btn-outline-light menu-toggle fade @(!isMenuVisible ? "show" : "")" type="button" @onclick="HandleMenuToggle">
@@ -21,19 +22,19 @@
                 }
                 <div class="company-brand">
                     <img src="brand/isotipo.svg" alt="Isotipo de Monitoreo de tanques" class="company-logo" />
-                    <span class="@(isMenuVisible ? "d-none" : "") fs-4">Monitoreo de tanques</span>
+                    <span class="brand-title @(isMenuVisible ? "d-none" : "")">Monitoreo de tanques</span>
                 </div>
             </div>
 
             @if (IsDemo)
             {
                 <span class="badge text-bg-warning" title="Los datos que ves los genera un simulador">
-                    <i class="bi bi-exclamation-triangle-fill"></i> Datos simulados · demo de solo lectura
+                    <i class="bi bi-exclamation-triangle-fill"></i> <span class="d-none d-lg-inline">Datos simulados · demo de solo lectura</span><span class="d-lg-none">Demo</span>
                 </span>
             }
         </div>
 
-        <article class="content px-4">
+        <article class="content px-3 px-md-4">
             @Body
         </article>
     </main>
@@ -46,7 +47,23 @@
 </div>
 
 @code {
-    private bool isMenuVisible = true;
+    // Cerrado por defecto (movil); en pantallas anchas se abre tras el primer render.
+    private bool isMenuVisible;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        try
+        {
+            if (await JS.InvokeAsync<bool>("layoutHelpers.isWide"))
+            {
+                isMenuVisible = true;
+                StateHasChanged();
+            }
+        }
+        catch (JSException) { }
+        catch (InvalidOperationException) { }
+    }
 
     private bool IsDemo => Configuration.GetValue<bool>("Demo:Enabled");
 

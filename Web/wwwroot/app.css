@@ -49,3 +49,27 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+/* Ajustes para pantallas angostas: evita desborde horizontal y deja las tablas legibles. */
+html, body {
+    overflow-x: hidden;
+}
+
+@media (max-width: 575.98px) {
+    .table-responsive .table {
+        font-size: 0.85rem;
+    }
+
+    .table-responsive .table > :not(caption) > * > * {
+        padding: 0.4rem 0.35rem;
+    }
+
+    .content .container {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .card-body h3 {
+        font-size: 1.25rem;
+    }
+}

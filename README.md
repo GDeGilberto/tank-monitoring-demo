@@ -1,4 +1,4 @@
-# Monitoreo de tanques - IoT
+# Monitoreo de tanques (demo)
 
 Sistema web que monitorea en tiempo real tanques con líquidos. Lee el hardware de medición por puerto serial, guarda inventarios y descargas, y los muestra en un dashboard. El lector es una abstracción (`ITankReader`) y el protocolo es propio ([docs/protocolo.md](docs/protocolo.md)), así que sirve con cualquier sensor.
 
@@ -98,6 +98,10 @@ dotnet run --project API       # y, en otra terminal: dotnet run --project Web
 ## Cambio de comportamiento: descargas
 
 El repositorio de descargas deduplica por sitio, tanque y fecha-hora de inicio (minuto), no por día completo. Así se guardan varias descargas el mismo día y se guardan todas las entregas que informa el lector.
+
+## Aviso
+
+Es un demo con datos simulados, pensado para mostrar la arquitectura y el protocolo. No es un producto terminado ni debe conectarse a equipos reales sin una revisión de seguridad propia. Las gráficas y los iconos se cargan desde CDN (Chart.js, Bootstrap Icons), así que el navegador necesita Internet.
 
 ## Procedencia
 
