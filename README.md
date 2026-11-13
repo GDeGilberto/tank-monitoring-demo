@@ -101,8 +101,12 @@ El repositorio de descargas deduplica por sitio, tanque y fecha-hora de inicio (
 
 ## Aviso
 
-Es un demo con datos simulados, pensado para mostrar la arquitectura y el protocolo. No es un producto terminado ni debe conectarse a equipos reales sin una revisión de seguridad propia. Las gráficas y los iconos se cargan desde CDN (Chart.js, Bootstrap Icons), así que el navegador necesita Internet.
+Es un demo con datos simulados, pensado para mostrar la arquitectura y el protocolo. No es un producto terminado ni debe conectarse a equipos reales sin una revisión de seguridad propia. No requiere Internet en el navegador: Chart.js, Bootstrap y Bootstrap Icons viajan como copias locales en `Web/wwwroot/lib/` (todas MIT, con su aviso de licencia).
 
 ## Procedencia
 
 El protocolo es propio y se explica con palabras propias en [docs/protocolo.md](docs/protocolo.md). El repositorio no incluye ni cita ningún manual de fabricante, ni marcas ni datos de terceros. El isotipo es un SVG propio.
+
+## Licencia
+
+MIT, ver [LICENSE](LICENSE). Las dependencias incluidas en `Web/wwwroot/lib/` conservan sus propias licencias MIT.
