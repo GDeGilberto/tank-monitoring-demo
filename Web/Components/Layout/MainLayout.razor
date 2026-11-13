@@ -1,0 +1,57 @@
+﻿@inherits LayoutComponentBase
+@inject IConfiguration Configuration
+
+<div class="page">
+    <div class="sidebar @(isMenuVisible ? "show" : "")">
+        <NavMenu>
+            <buttonClose>
+                <button @onclick="HandleMenuToggle" class="btn-close bg-light"></button>
+            </buttonClose>
+        </NavMenu>
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <div class="d-flex align-items-center">
+                @if (!isMenuVisible)
+                {
+                    <button class="btn btn-outline-light menu-toggle fade @(!isMenuVisible ? "show" : "")" type="button" @onclick="HandleMenuToggle">
+                        <i class="bi bi-list"></i>
+                    </button>
+                }
+                <div class="company-brand">
+                    <img src="brand/isotipo.svg" alt="Isotipo de Monitoreo de tanques" class="company-logo" />
+                    <span class="@(isMenuVisible ? "d-none" : "") fs-4">Monitoreo de tanques</span>
+                </div>
+            </div>
+
+            @if (IsDemo)
+            {
+                <span class="badge text-bg-warning" title="Los datos que ves los genera un simulador">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Datos simulados · demo de solo lectura
+                </span>
+            }
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui">
+    Se ha producido un error no controlado.
+    <a href="" class="reload">Recargar</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+@code {
+    private bool isMenuVisible = true;
+
+    private bool IsDemo => Configuration.GetValue<bool>("Demo:Enabled");
+
+    private void HandleMenuToggle()
+    {
+        isMenuVisible = !isMenuVisible;
+    }
+}

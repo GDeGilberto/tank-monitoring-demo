@@ -1,0 +1,84 @@
+﻿@page "/Account/RegisterConfirmation"
+
+@using System.Text
+@using Infrastructure.Data
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IEmailSender<ApplicationUser> EmailSender
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Confirmacion de registro</PageTitle>
+
+<h1>Confirmacion de registro</h1>
+
+<StatusMessage Message="@statusMessage" />
+
+@if (emailConfirmationLink is not null)
+{
+    <section class="row">
+        <p class="col-lg-6 col-sm-12">
+            La aplicacion actualmente no tiene un servicio de envio de correos configurado, consulta <a href="https://aka.ms/aspaccountconf">la documentacion</a>
+            para saber como configurar un servicio de correo real.
+            Normalmente, esto se enviara por correo electronico: <a href="@emailConfirmationLink">Haz clic aqui para forzar confirmacion de tu cuenta</a>
+        </p>
+        <div class="col-lg-6 col-sm-12">
+            <div class="d-flex justify-content-center">
+                <img src="/svg/undraw_personal-email_hfut.svg" class="img-fluid  w-75" alt="Alternate Text" />
+            </div>
+        </div>
+    </section>
+    
+}
+else
+{
+    <p>Porfavor revisa tu correo electronico para confirmar tu cuenta.</p>
+    <div class="col-md-8 col-md-offset-2">
+        <section>
+            <div class="d-flex justify-content-center">
+                <img src="/svg/undraw_mail-sent_ujev.svg" class="img-fluid  w-50" alt="Alternate Text" />
+            </div>
+        </section>
+    </div>
+}
+
+@code {
+    private string? emailConfirmationLink;
+    private string? statusMessage;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? Email { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Email is null)
+        {
+            RedirectManager.RedirectTo("");
+        }
+
+        var user = await UserManager.FindByEmailAsync(Email);
+        if (user is null)
+        {
+            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+            statusMessage = "Error finding user for unspecified email";
+        }
+        else if (EmailSender is IdentityNoOpEmailSender)
+        {
+            // Once you add a real email sender, you should remove this code that lets you confirm the account
+            var userId = await UserManager.GetUserIdAsync(user);
+            var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            emailConfirmationLink = NavigationManager.GetUriWithQueryParameters(
+                NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
+                new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
+        }
+    }
+}

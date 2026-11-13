@@ -1,0 +1,56 @@
+﻿@page "/Account/ConfirmEmail"
+
+@using System.Text
+@using Infrastructure.Data
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Confirmación de correo</PageTitle>
+
+<h1>Confirmación de correo electrónico</h1>
+<StatusMessage Message="@statusMessage" />
+
+<section class="row d-flex justify-content-center">
+    <div class="col-lg-4 col-md-8 col-sm-12">
+        <img src="/svg/undraw_authentication_tbfc.svg" class="img-fluid  w-75" alt="Alternate Text" />
+    </div>
+    
+</section>
+
+
+@code {
+    private string? statusMessage;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? UserId { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? Code { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (UserId is null || Code is null)
+        {
+            RedirectManager.RedirectTo("");
+        }
+
+        var user = await UserManager.FindByIdAsync(UserId);
+        if (user is null)
+        {
+            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+            statusMessage = $"Error loading user with ID {UserId}";
+        }
+        else
+        {
+            var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
+            var result = await UserManager.ConfirmEmailAsync(user, code);
+            statusMessage = result.Succeeded ? "Gracias por confirmar tu correo electrónico." : "Error al confirmar tu correo electrónico.";
+        }
+    }
+}

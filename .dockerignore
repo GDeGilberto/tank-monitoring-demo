@@ -1,0 +1,17 @@
+**/bin/
+**/obj/
+**/.vs/
+.git/
+.github/
+.env
+.env.*
+!.env.example
+**/appsettings.json
+**/appsettings.Development.json
+Test/
+Presentation/
+docs/
+scripts/
+*.md
+docker-compose*.yml
+Dockerfile*
